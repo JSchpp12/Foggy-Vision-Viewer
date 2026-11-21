@@ -26,6 +26,7 @@ class ViewerFilters:
     scene: Optional[str] = None
     fog_type: Optional[str] = None
     fog_volume: Optional[str] = None
+    skybox: Optional[str] = None
     session: Optional[str] = None
     min_meters: Optional[float] = None
     max_meters: Optional[float] = None
@@ -59,6 +60,7 @@ def filters_from_values(
     scene: str = "",
     fog_type: str = "",
     fog_volume: str = "",
+    skybox: str = "",
     session: str = "",
     min_text: str = "",
     max_text: str = "",
@@ -72,6 +74,7 @@ def filters_from_values(
         scene=_combobox_value(scene),
         fog_type=_combobox_value(fog_type),
         fog_volume=_combobox_value(fog_volume),
+        skybox=_combobox_value(skybox),
         session=_combobox_value(session),
         min_meters=minimum,
         max_meters=maximum,
@@ -87,6 +90,8 @@ def build_selection(lib, filters: ViewerFilters) -> "Selection":
         query = query.fog_type(filters.fog_type)
     if filters.fog_volume is not None:
         query = query.fog_volume(filters.fog_volume)
+    if filters.skybox is not None:
+        query = query.skybox(filters.skybox)
     if filters.session is not None:
         query = query.sessions(filters.session)
     if filters.min_meters is not None or filters.max_meters is not None:
@@ -115,5 +120,6 @@ def combobox_values(lib) -> dict[str, list[str]]:
         "scene": [ALL, *lib.scenes()],
         "fog_type": [ALL, *lib.fog_types()],
         "fog_volume": [ALL, *volumes],
+        "skybox": [ALL, *lib.skyboxes()],
         "session": [ALL, *lib.sessions()],
     }

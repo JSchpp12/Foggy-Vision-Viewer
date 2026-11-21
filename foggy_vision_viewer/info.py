@@ -132,6 +132,7 @@ def format_detail(record: ImageRecord) -> str:
         f"Image:      {record.width or '?'} x {record.height or '?'}"
         f" · {record.format}",
         f"Scene:      {scene}",
+        f"Skybox:     {record.skybox_name or _DASH}",
         f"Camera:     {camera}",
         f"Fog:        {fog}",
         f"Visibility: {visibility}",

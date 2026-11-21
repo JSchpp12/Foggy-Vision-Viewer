@@ -65,6 +65,7 @@ def test_format_detail(library):
     assert "Session:    2026-01-01_00-00-00  (2026-01-01 00:00:00 UTC)" in text
     assert "Image:      64 x 48 · color" in text
     assert "Scene:      terrain_a  (real, coverage 18.00 mi)" in text
+    assert "Skybox:     sky_a" in text
     assert "Camera:     id 1 · pos (0.00, 15.00, 0.00)" in text
     assert "Fog:        marched · volume vol_a" in text
     assert "Visibility: 1,000.00 m (0.62 mi)  [ray_including_invalid]" in text
@@ -78,6 +79,7 @@ def test_format_detail_simple_and_no_masks(library):
     text = format_detail(_record(library, FRAME_NO_MASK))
     assert "Visibility: 500.00 m (0.31 mi)  [simple]" in text
     assert "simple:    500.00" in text
+    assert "Skybox:     —" in text
     assert "Masks:      none" in text
 
 
@@ -94,6 +96,7 @@ def test_format_detail_time_unknown():
     assert "time unknown" in text
     assert "Session:    —" in text
     assert "Visibility: —" in text
+    assert "Skybox:     —" in text
     assert "Masks:      none" in text
 
 

@@ -79,6 +79,7 @@ class ViewerApp:
         self.scene_var = tk.StringVar(value=ALL)
         self.fog_type_var = tk.StringVar(value=ALL)
         self.fog_volume_var = tk.StringVar(value=ALL)
+        self.skybox_var = tk.StringVar(value=ALL)
         self.session_var = tk.StringVar(value=ALL)
         self.vis_min_var = tk.StringVar()
         self.vis_max_var = tk.StringVar()
@@ -176,8 +177,20 @@ class ViewerApp:
         )
         self.role_combo.grid(row=1, column=6, sticky="w", pady=(6, 0))
 
+        ttk.Label(query, text="Skybox:").grid(
+            row=2, column=0, sticky="w", pady=(6, 0)
+        )
+        self.skybox_combo = ttk.Combobox(
+            query,
+            width=28,
+            state="readonly",
+            textvariable=self.skybox_var,
+            values=self._values["skybox"],
+        )
+        self.skybox_combo.grid(row=2, column=1, sticky="w", pady=(6, 0))
+
         ttk.Label(query, text=HINT, foreground=PATH_FG).grid(
-            row=1, column=7, columnspan=3, sticky="w", padx=(16, 0), pady=(6, 0)
+            row=2, column=2, columnspan=8, sticky="w", padx=(16, 0), pady=(6, 0)
         )
 
         self.canvas = tk.Canvas(
@@ -196,7 +209,7 @@ class ViewerApp:
 
         self.info_text = tk.Text(
             info,
-            height=9,
+            height=10,
             wrap="word",
             font=("TkFixedFont", 9),
             relief="flat",
@@ -223,6 +236,7 @@ class ViewerApp:
             self.scene_combo,
             self.fog_type_combo,
             self.fog_volume_combo,
+            self.skybox_combo,
             self.session_combo,
         ):
             entry.bind("<Return>", lambda _event: self.apply())
@@ -253,6 +267,7 @@ class ViewerApp:
                 scene=self.scene_var.get(),
                 fog_type=self.fog_type_var.get(),
                 fog_volume=self.fog_volume_var.get(),
+                skybox=self.skybox_var.get(),
                 session=self.session_var.get(),
                 min_text=self.vis_min_var.get(),
                 max_text=self.vis_max_var.get(),

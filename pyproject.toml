@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "foggy-vision-viewer"
-dynamic = ["version"]
+version = "0.4.0"
 description = "Desktop image and ray-mask browser for FoggyVision datasets"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -35,9 +35,6 @@ foggy-vision-viewer = "foggy_vision_viewer.__main__:main"
 
 [project.urls]
 Repository = "https://github.com/JSchpp12/Foggy_Vision_Viewer"
-
-[tool.hatch.version]
-path = "foggy_vision_viewer/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["foggy_vision_viewer"]

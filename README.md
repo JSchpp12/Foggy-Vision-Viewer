@@ -98,6 +98,8 @@ command-line options are needed. Local use does not require `paramiko`.
 - **Scene** — exact terrain/scene name from the database.
 - **Fog type** — e.g. `marched`.
 - **Volume** — fog volume name.
+- **Skybox** — the skybox name recorded for the view. Databases imported before
+  skybox metadata existed show only `All` here.
 - **Session** — the `YYYY-MM-DD_HH-MM-SS` import session.
 - **Visibility (m)** — inclusive min/max on the resolved visibility value.
 
@@ -109,7 +111,7 @@ meters; the info panel also shows the mile equivalent.
 The **View** selector switches between:
 
 | Role | File |
-|---|---|
+| --- | --- |
 | Color | `Frame-N.png` |
 | Distance (m) | `Frame-N_distMask.tif` (32-bit float, auto-normalized for display) |
 | Normalized distance | `Frame-N_distNormSmlMask.tif` |
@@ -121,7 +123,7 @@ continues.
 ## Controls
 
 | Input | Action |
-|---|---|
+| --- | --- |
 | `Left` / `Right` | Previous / next image |
 | `Home` / `End` | First / last image |
 | `1` – `4` | Color / Distance / Normalized distance / Validity |
@@ -133,13 +135,17 @@ Arrow keys are ignored while a filter widget or dropdown has focus.
 ## Info panel
 
 The panel shows the relative media path and role, session folder and UTC
-capture time, image dimensions, scene/terrain and coverage, camera position and
-look direction, fog type/volume/density/multiplier, the resolved visibility in
+capture time, image dimensions, scene/terrain and coverage, skybox name, camera
+position and look direction, fog type/volume/density/multiplier, the resolved
+visibility in
 meters and miles with the metric used, all three metrics' raw
 average/median/min/ray-count values, and which masks exist for the frame.
 
 ## Notes
 
+- Skybox filtering and the info-panel line require loader 0.3.0 or newer.
+  Legacy databases without skybox metadata still open; the Skybox dropdown
+  contains only `All` and the panel shows `—`.
 - Visibility uses the loader's auto-fallback: `simple`, else
   `ray_including_invalid`, else `ray_excluding_invalid`.
 - Distance-mask TIFFs are normalized per image to 8-bit grayscale for display;
@@ -147,3 +153,10 @@ average/median/min/ray-count values, and which masks exist for the frame.
   tifffile (which handles the LZW-compressed normalized mask).
 - The viewer queries SQLite on the UI thread and decodes images on a
   background thread with a bounded LRU cache and neighbor prefetch.
+
+## AI Disclosure
+
+Portions of this project's code were written with the assistance of an AI
+coding model, **DeepSeek V4.1 Flash** (`deepseek-v4.1-flash`), operating through
+Claude Code. All generated and modified code was reviewed by the repository
+authors and approved for inclusion before being committed.

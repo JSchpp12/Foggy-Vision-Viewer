@@ -30,12 +30,19 @@ def test_filters_from_values_defaults():
     filters = filters_from_values()
     assert filters == ViewerFilters()
     assert filters.scene is None
+    assert filters.skybox is None
     assert filters.min_meters is None
 
 
 def test_filters_from_values_all_and_blank():
     filters = filters_from_values(
-        scene=ALL, fog_type="", fog_volume=ALL, session="", min_text="", max_text=""
+        scene=ALL,
+        fog_type="",
+        fog_volume=ALL,
+        skybox=ALL,
+        session="",
+        min_text="",
+        max_text="",
     )
     assert filters == ViewerFilters()
 
@@ -45,6 +52,7 @@ def test_filters_from_values_values():
         scene="terrain_a",
         fog_type="marched",
         fog_volume="vol_b",
+        skybox="sky_b",
         session=SESSION_A,
         min_text="1.5",
         max_text="25",
@@ -52,6 +60,7 @@ def test_filters_from_values_values():
     assert filters.scene == "terrain_a"
     assert filters.fog_type == "marched"
     assert filters.fog_volume == "vol_b"
+    assert filters.skybox == "sky_b"
     assert filters.session == SESSION_A
     assert filters.min_meters == 1.5
     assert filters.max_meters == 25.0
@@ -76,6 +85,17 @@ def test_build_selection_fog(library):
     assert build_selection(library, ViewerFilters(fog_type="linear")).count() == 0
     assert build_selection(library, ViewerFilters(fog_volume="vol_b")).count() == 1
     assert build_selection(library, ViewerFilters(fog_volume="vol_a")).count() == 3
+
+
+def test_build_selection_skybox(library):
+    assert build_selection(library, ViewerFilters(skybox="sky_a")).count() == 2
+    assert build_selection(library, ViewerFilters(skybox="sky_b")).count() == 1
+    assert build_selection(library, ViewerFilters(skybox="missing")).count() == 0
+
+
+def test_build_selection_skybox_legacy(legacy_library):
+    assert build_selection(legacy_library, ViewerFilters()).count() == 4
+    assert build_selection(legacy_library, ViewerFilters(skybox="sky_a")).count() == 0
 
 
 def test_build_selection_session(library):
@@ -115,9 +135,16 @@ def test_combobox_values(library):
     assert values["scene"] == [ALL, "terrain_a"]
     assert values["fog_type"] == [ALL, "marched"]
     assert values["fog_volume"] == [ALL, "vol_a", "vol_b"]
+    assert values["skybox"] == [ALL, "sky_a", "sky_b"]
     assert values["session"] == [
         ALL,
         "2026-01-01_00-00-00",
         "2026-01-02_00-00-00",
         "2026-01-03_00-00-00",
     ]
+
+
+def test_combobox_values_legacy(legacy_library):
+    values = combobox_values(legacy_library)
+    assert values["skybox"] == [ALL]
+    assert values["fog_volume"] == [ALL, "vol_a", "vol_b"]
