@@ -18,7 +18,7 @@ from .filters import (
     filters_from_values,
     natural_sort,
 )
-from .image_cache import ImageCache, key_for
+from .image_cache import Decoder, ImageCache, key_for
 from .info import (
     MEDIA_ROLES,
     ROLE_ORDER,
@@ -43,10 +43,19 @@ HINT = "←/→ navigate · Home/End jump · 1–4 media · Enter apply"
 class ViewerApp:
     """Single-image browser with filters, navigation, and media roles."""
 
-    def __init__(self, library, root: Optional[tk.Tk] = None) -> None:
+    def __init__(
+        self,
+        library,
+        root: Optional[tk.Tk] = None,
+        *,
+        decode: Optional[Decoder] = None,
+        prefetch_radius: int = PREFETCH_RADIUS,
+        display_label: Optional[str] = None,
+    ) -> None:
         self.lib = library
         self.root = root if root is not None else tk.Tk()
-        self.root.title(f"Foggy Vision Viewer — {self.lib.db_dir}")
+        label = display_label if display_label is not None else self.lib.db_dir
+        self.root.title(f"Foggy Vision Viewer — {label}")
         self.root.geometry("1200x800")
         self.root.minsize(700, 450)
 
@@ -63,7 +72,8 @@ class ViewerApp:
         self._last_canvas_size = (0, 0)
         self._closed = False
 
-        self.cache = ImageCache()
+        self.cache = ImageCache(decode=decode)
+        self._prefetch_radius = prefetch_radius
 
         self._values = combobox_values(self.lib)
         self.scene_var = tk.StringVar(value=ALL)
@@ -339,7 +349,7 @@ class ViewerApp:
             return
 
         neighbors = []
-        for step in range(1, PREFETCH_RADIUS + 1):
+        for step in range(1, self._prefetch_radius + 1):
             for offset in (step, -step):
                 other = index + offset
                 if 0 <= other < total:

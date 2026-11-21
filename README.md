@@ -42,10 +42,56 @@ or:
 python -m foggy_vision_viewer --db F:\data\foggyvision\database.sqlite3
 ```
 
-`--db` requires the SQLite database file (a directory is rejected). With no
-argument, the viewer reads `FOGGY_VISION_DATABASE`, which must also point at
-the `.sqlite3` file. The image tree defaults to the sibling `images\`
-directory; use `--images-dir DIR` if it lives elsewhere.
+`--db` accepts the SQLite database file or an `sftp://` URL (see
+[Remote datasets](#remote-datasets-sftp)). A directory is rejected. With no
+argument, the viewer reads `FOGGY_VISION_DATABASE`, which may also be either
+form. The image tree defaults to the sibling `images\` directory; use
+`--images-dir DIR` if it lives elsewhere.
+
+## Remote datasets (SFTP)
+
+Install the optional transport:
+
+```powershell
+python -m pip install -e ".[sftp]"
+```
+
+Point `--db` at an `sftp://` URL, or put one in `FOGGY_VISION_DATABASE`:
+
+```powershell
+foggy-vision-viewer --db sftp://user@host:2222/srv/foggyvision/database.sqlite3
+```
+
+Only an explicit `sftp://` prefix is remote. Local paths — including Windows
+paths such as `C:\data\db.sqlite3` — behave exactly as before, and no extra
+command-line options are needed. Local use does not require `paramiko`.
+
+- **Authentication** uses your SSH agent or the default key files
+  (`~/.ssh/id_ed25519`, `~/.ssh/id_rsa`). Passwords are not accepted in the URL
+  or on the command line. On Windows, Pageant is used automatically when it is
+  running with a key loaded; Pageant must load a `.ppk` key and run at the same
+  privilege level as the viewer.
+- **Host keys** are checked strictly against `~/.ssh/known_hosts`. If the key is
+  unknown or does not match, the viewer exits with the SHA-256 fingerprint and
+  the command needed to trust it, for example:
+
+  ```powershell
+  ssh-keyscan -p 2222 host >> $env:USERPROFILE\.ssh\known_hosts
+  ```
+
+- **Cache:** the database is mirrored at startup to
+  `%LOCALAPPDATA%\foggy-vision-viewer\remote\` (`~/Library/Caches/foggy-vision-viewer/remote/`
+  on macOS, `${XDG_CACHE_HOME:-~/.cache}/foggy-vision-viewer/remote/` elsewhere),
+  under a folder keyed by host and remote paths. Images and masks are downloaded on demand into the same folder
+  and reused on later visits. Restart the viewer to pick up a new remote
+  import; the cache is not evicted automatically, so delete the dataset folder
+  to reclaim space.
+- **`--images-dir`** with an `sftp://` database is a remote POSIX path on the
+  same host (absolute, or starting with `~/`). It defaults to `<db_dir>/images`.
+  The local mirror is managed automatically; do not pass a local path.
+- Queries run locally against the mirrored database; images are fetched on the
+  background decode thread. Remote mode prefetches one neighbor per step
+  (local mode keeps two).
 
 ## Filters
 
