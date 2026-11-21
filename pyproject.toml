@@ -1,0 +1,63 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "foggy-vision-viewer"
+dynamic = ["version"]
+description = "Desktop image and ray-mask browser for FoggyVision datasets"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "pillow>=9.1",
+  "numpy>=1.23",
+  "tifffile>=2023",
+  "imagecodecs>=2024",
+]
+keywords = ["foggyvision", "fog", "visibility", "viewer", "images"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Operating System :: OS Independent",
+  "Topic :: Multimedia :: Graphics :: Viewers",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+
+[project.scripts]
+foggy-vision-viewer = "foggy_vision_viewer.__main__:main"
+
+[project.urls]
+Repository = "https://github.com/JSchpp12/Foggy_Vision_Viewer"
+
+[tool.hatch.version]
+path = "foggy_vision_viewer/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["foggy_vision_viewer"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/foggy_vision_viewer",
+  "/tests",
+  "/README.md",
+  "/pyproject.toml",
+]
+
+[tool.hatch.envs.default]
+dependencies = [
+  "foggy_vision_loader @ {root:uri}/../Foggy_Vision_Loader",
+]
+
+[tool.hatch.envs.default.scripts]
+viewer = "python -m foggy_vision_viewer {args}"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
